@@ -3,85 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Cat Corner</title>
+    <title>Cat Explorer Pro</title>
     <style>
-        /* CSS: Making it look pretty */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f8ff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 50px;
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --bg: #dfe6e9;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             text-align: center;
-            max-width: 400px;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .cat-frame {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            height: 300px;
+            background: #eee;
         }
 
         img {
             width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .fact-box {
+            font-style: italic;
+            font-size: 0.9rem;
+            color: #636e72;
+            min-height: 50px;
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid var(--primary);
+            background: #f1f2f6;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         button {
-            background-color: #ff6b6b;
-            color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background-color: #ee5253;
-        }
-
-        #meow-text {
-            margin-top: 15px;
             font-weight: bold;
-            color: #576574;
-            height: 20px;
+            transition: 0.2s;
         }
+
+        .btn-main { background: var(--primary); color: white; }
+        .btn-like { background: #ff7675; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>The Cat Corner</h1>
-        <img id="cat-image" src="https://placekitten.com/400/300" alt="A cute cat">
-        <p>Welcome to the simplest cat page on the internet!</p>
+    <div class="container">
+        <h2 id="cat-name">Mr. Whiskers</h2>
         
-        <button onclick="meow()">Click to Meow!</button>
-        <div id="meow-text"></div>
+        <div class="cat-frame">
+            <img id="cat-img" src="https://cataas.com/cat" alt="Random Cat">
+        </div>
+
+        <div class="stats-row">
+            <span>Level: <span id="level">1</span></span>
+            <span>❤️ Likes: <span id="like-count">0</span></span>
+        </div>
+
+        <div class="fact-box" id="fact-text">
+            Click "New Cat" to get a fun fact!
+        </div>
+
+        <div class="controls">
+            <button class="btn-main" onclick="updateCat()">New Cat 🐾</button>
+            <button class="btn-like" onclick="addLike()">Like ❤️</button>
+        </div>
     </div>
 
     <script>
-        function meow() {
-            const textDisplay = document.getElementById('meow-text');
-            const catImg = document.getElementById('cat-image');
-            
-            // Show text
-            textDisplay.innerText = "MEOW! 🐾";
-            
-            // Change image to a different random kitten
-            const randomId = Math.floor(Math.random() * 100);
-            catImg.src = `https://picsum.photos/400/300?random=${randomId}`;
+        const names = ["Captain Fluff", "Luna", "Sir Pounce-a-lot", "Mochi", "Garfield", "Shadow", "Bella", "Ziggy"];
+        const facts = [
+            "Cats have 32 muscles in each ear.",
+            "A group of cats is called a 'clowder'.",
+            "Cats spend 70% of their lives sleeping.",
+            "A cat's nose print is unique, like a human fingerprint.",
+            "Cats can't taste sweetness."
+        ];
 
-            // Clear the text after 1 second
-            setTimeout(() => {
-                textDisplay.innerText = "";
-            }, 1000);
+        let likes = 0;
+
+        function updateCat() {
+            // 1. Change Name
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            document.getElementById('cat-name').innerText = randomName;
+
+            // 2. Change Image (using a cache-buster timestamp)
+            const img = document.getElementById('cat-img');
+            img.src = "https://cataas.com/cat?t=" + new Date().getTime();
+
+            // 3. Random Fact
+            const randomFact = facts[Math.floor(Math.random() * facts.length)];
+            document.getElementById('fact-text').innerText = randomFact;
+        }
+
+        function addLike() {
+            likes++;
+            document.getElementById('like-count').innerText = likes;
+            
+            // Level up every 5 likes
+            const level = Math.floor(likes / 5) + 1;
+            document.getElementById('level').innerText = level;
         }
     </script>
-
 </body>
 </html>
